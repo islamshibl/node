@@ -2,27 +2,14 @@ const http = require('http');
 var os = require('os');
 var helper = require('./helpers/helperclass');
 var request = require('request');
-var EventEmitter=require('events').EventEmitter;
+//var EventEmitter=require('events').EventEmitter;
+var Resource = require('./resource/resource');
 const hostname = '127.0.0.1';
 const port = 3000;
 
 
-var getResource =function(c){
-  var e =new EventEmitter();
-  process.nextTick(function(){
-    var count =0;
-    e.emit('start');
-    var t =setInterval(function(){
-      e.emit('data', ++count);
-        if(count ===c){
-          e.emit('end',count);
-          clearInterval(t);
-        }
-    },10);
-  });
-  return(e);
-}
-var resource =getResource(5);
+var r = new Resource(7);
+
 
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
@@ -47,15 +34,16 @@ server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
 
-  //Using EventEmitter
-  resource.on('start',function(){
-    console.log("I've Started!");
-  });
 
-  resource.on('data',function(data){
-    console.log("I've Received data  -> "+ data);
-  });
+//Using EventEmitter
+r.on('start', function () {
+  console.log("I've Started!");
+});
 
-  resource.on('end',function(t){
-    console.log("I'm done  with "+t +" data events");
-  });
+r.on('data', function (data) {
+  console.log("I've Received data  -> " + data);
+});
+
+r.on('end', function (t) {
+  console.log("I'm done  with " + t + " data events");
+});
